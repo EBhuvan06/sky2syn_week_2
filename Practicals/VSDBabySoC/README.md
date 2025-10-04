@@ -1,5 +1,7 @@
 # Practical 
-## Project Structure
+<details>
+ <summary>Project Structure</summary>
+ 
 - src/include/ - Contains header files (*.vh) with necessary macros or parameter definitions.
 - src/module/ - Contains Verilog files for each module in the SoC design.
 - output/ - Directory where compiled outputs and simulation files will be generated.
@@ -73,10 +75,11 @@ To diactivate:
 ```
 diactivate
 ```
-
-## Simulation steps
-
-### Pre-Synthesis Simulation
+</details>
+<details>
+ <summary>Simulation</summary>
+<details>
+ <summary>Pre-Synthesis Simulation</summary>
 Run the following command to perform a pre-synthesis simulation:
 ```
 cd VSDBabySoC/
@@ -107,5 +110,7 @@ This can be viewed by changing the Data Format of the signal to Analog --> Step 
 
  ![Pre_Simulationstep](images/gtkwave_step.png)
  ![Pre_Simulation_step](images/step.png)
- 
+ </details>
+<details>
+ <summary>Post-Synthesis Simulation</summary>
 
