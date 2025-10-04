@@ -80,6 +80,7 @@ diactivate
  <summary>Simulation</summary>
 <details>
  <summary>Pre-Synthesis Simulation</summary>
+ 
 Run the following command to perform a pre-synthesis simulation:
 ```
 cd VSDBabySoC/
