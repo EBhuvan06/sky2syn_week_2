@@ -65,7 +65,9 @@ Seeing the connection between theory (SoC architecture) and practice (functional
 # Reference
 
 This learning was based on:
+
 [Fundamentals of SoC Design-GitHub Notes](https://github.com/hemanthkumardm/SFAL-VSD-SoC-Journey/tree/main/11.%20Fundamentals%20of%20SoC%20Design)
+
 
 
 
