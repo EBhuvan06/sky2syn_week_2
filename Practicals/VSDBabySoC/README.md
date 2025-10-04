@@ -91,7 +91,7 @@ cd VSDBabySoC/output/pre_synth_sim
 gtkwave pre_synth_sim.vcd
 ```
 Drag and drop the CLK, reset, OUT (DAC), and RV TO DAC [9:0] signals to their respective locations in the simulation tool
- ![Pre_Simulation](Images/gtkwave_pre.png)
+ ![Pre_Simulation](images/gtkwave_pre.png)
  In this picture we can see the following signals:
 
 CLK: This is the input CLK signal of the RVMYTH core. This signal comes from the PLL, originally.
@@ -105,7 +105,7 @@ OUT: This is a real datatype wire which can simulate analog values. It is the ou
 
 This can be viewed by changing the Data Format of the signal to Analog --> Step by right clicking on OUT and then Analog --> Step
 
- ![Pre_Simulationstep](Images/gtkwave_step.png)
- ![Pre_Simulation_step](Images/step.png)
+ ![Pre_Simulationstep](images/gtkwave_step.png)
+ ![Pre_Simulation_step](images/step.png)
  
 
