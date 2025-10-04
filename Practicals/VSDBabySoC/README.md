@@ -56,7 +56,7 @@ pip install pyyaml click sandpiper-saas
 sandpiper-saas -i ./src/module/*.tlv -o rvmyth.v --bestsv --noline -p verilog --outdir ./src/module/
 
 ```
- ![Conversion](Images/conver_to_verilog.png)
+ ![Conversion](images/conver_to_verilog.png)
   
 The rvmyth.v file has been generagted to check them follow the commands:
 ```
