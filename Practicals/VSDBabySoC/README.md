@@ -115,3 +115,140 @@ This can be viewed by changing the Data Format of the signal to Analog --> Step 
 <details>
  <summary>Post-Synthesis Simulation</summary>
 
+Run the following command to perform a pre-synthesis simulation step by step:
+## Step 1: Load the Top-Level Design and Supporting Modules
+
+
+The following cp commands copy essential header files from the src/include directory into the working directory. These include:
+
+sp_verilog.vh – contains Verilog definitions and macros
+
+sandpiper.vh – holds integration-related definitions for SandPiper
+
+sandpiper_gen.vh – may include auto-generated or tool-generated parameters
+
+The commands are:
+```
+cp -r src/include/sp_verilog.vh .
+cp -r src/include/sandpiper.vh .
+cp -r src/include/sandpiper_gen.vh .
+ls # this provides the directory required
+images  LICENSE  Makefile  output  README.md  sandpiper_gen.vh  sandpiper.vh  sp_env  sp_verilog.vh  src
+# Launch the yosys synthesis tool from your working directory.
+# Change the directory to where you want to initialise the yosys
+yosys
+#Read the rvmyth.v file with the include path using -I option.
+read_verilog -I src/include/ src/module/rvmyth.v
+```
+
+ ![Copy_File](images/copy_file.png)
+
+### Note
+If you try to read the rvmyth.v file using yosys without copying the necessary header files first, you may encounter errors. To avoid errors, make sure to copy the required include files into your working directory! This ensures Yosys can resolve them correctly during parsing, even if the -I option is used.
+
+
+Read the clk_gate.v file with the include path using -I option.
+```
+yosys> read_verilog -I src/include/ src/module/clk_gate.v
+```
+![Clock_Read](images/read_clk.png)
+
+## Step 2: Load the Liberty Files for Synthesis
+Now load the liberary into for synthesis
+```
+yosys> read_liberty -lib src/lib/avsdpll.lib 
+yosys> read_liberty -lib src/lib/avsddac.lib 
+yosys> read_liberty -lib src/lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+```
+
+![Libeary_Read](images/read_lib.png)
+
+## Step 3: Run Synthesis Targeting vsdbabysoc by Reading the main vsdbabysoc.v RTL file into the yosys environment.
+
+
+```
+# Read the main vsdbabysoc.v RTL file into the yosys environment.
+yosys> read_verilog src/module/vsdbabysoc.v 
+# Now run the synthesis top module
+yosys> synth -top vsdbabysoc
+```
+
+![VSDBabySoC_Read](images/read_vsdbabysoc.png)
+![Clock_Synthesis](images/clk_syn.png)
+![Hyracy](images/hyracy.png)
+
+
+## Step 4: Map D Flip-Flops to Standard Cells
+
+```
+yosys> dfflibmap -liberty src/lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+```
+![D-FlipFlop](images/dff.png)
+
+## Step 5: Perform Optimization and Technology Mapping
+
+```
+yosys> opt
+yosys> abc -liberty src/lib/sky130_fd_sc_hd__tt_025C_1v80.lib -script +strash;scorr;ifraig;retime;{D};strash;dch,-f;map,-M,1,{D}
+
+ ---------------------------------------------------------------------------------------
+| Step           | Purpose                                                              |
+|--------------- | ---------------------------------------------------------------------|
+| `strash`       | Structural hashing (reduces logic redundancy)                        |
+| `scorr`        | Sequential sweeping for redundancy removal                           |
+| `ifraig`       | Incremental FRAIGing (logic equivalence checking and optimization)   |
+| `retime;{D}`   | Move registers across combinational logic to optimize timing         |
+| `strash`       | Re-run structural hashing after retiming                             |
+| `dch,-f`       | Delay-aware combinational optimization with fast mode                |
+| `map,-M,1,{D}` | Map logic to gates minimizing area (`-M,1`) and retime-aware (`{D}`) |
+ ---------------------------------------------------------------------------------------
+```
+![Optimisation](images/optpng)
+![abc_Synthesis](images/abc_syn.png)
+
+## Step 6: Perform Final Clean-Up and Renaming
+
+```
+yosys> flatten
+yosys> setundef -zero
+yosys> clean -purge
+yosys> rename -enumerate
+
+ --------------------------------------------------------------------------------------------------------------
+| **Command**         | **Purpose / Usage**                                                                    |
+|-------------------- | ---------------------------------------------------------------------------------------|
+| `flatten`           | Flattens the entire design hierarchy into a single-level netlist.                      |
+| `setundef -zero`    | Replaces all undefined (`x`) logic values with logical `0` to avoid simulation issues. |
+| `clean -purge`      | Removes all unused wires, cells, and modules; `-purge` makes it more aggressive.       |
+| `rename -enumerate` | Renames internal wires and cells to unique, numbered names for consistency.            |
+ --------------------------------------------------------------------------------------------------------------
+```
+![Flatten](images/flat.png)
+
+## Step 7: Check Statistics
+```
+yosys> stat
+```
+![stat](images/stat_1.png)
+![stat](images/stat.png)
+
+
+## Step 8: Write the Synthesized Netlist
+```
+yosys> write_verilog -noattr output/post_synth_sim/vsdbabysoc.synth.v
+```
+
+![Netlist](images/netlist.png)
+
+
+
+
+
+
+
+
+
+
+
+
+4
