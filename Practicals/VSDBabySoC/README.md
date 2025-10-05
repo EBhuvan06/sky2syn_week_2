@@ -203,7 +203,7 @@ yosys> abc -liberty src/lib/sky130_fd_sc_hd__tt_025C_1v80.lib -script +strash;sc
 | `map,-M,1,{D}` | Map logic to gates minimizing area (`-M,1`) and retime-aware (`{D}`) |
  ---------------------------------------------------------------------------------------
 ```
-![Optimisation](images/optpng)
+![Optimisation](images/opt.png)
 ![abc_Synthesis](images/abc_syn.png)
 
 ## Step 6: Perform Final Clean-Up and Renaming
@@ -240,15 +240,68 @@ yosys> write_verilog -noattr output/post_synth_sim/vsdbabysoc.synth.v
 
 ![Netlist](images/netlist.png)
 
+# POST_SYNTHESIS SIMULATION AND WAVEFORMS
+
+## Step 1: Compile the Testbench
+
+Before running the iverilog command, copy the necessary standard cell and primitive models: These files must be present in the same directory as the testbench (src/module) to resolve all module references during compilation.
+```
+cp -r sky130RTLDesignAndSynthesisWorkshop/my_lib/verilog_model/sky130_fd_sc_hd.v .
+cp -r sky130RTLDesignAndSynthesisWorkshop/my_lib/verilog_model/primitives.v .
+```
+
+To ensure that the synthesized Verilog file (vsdbabysoc.synth.v) is available in the src/module directory for further processing or simulation, you can copy it from the output directory to the src/module directory. Here is the step to do that:
+```
+cp -r output/post_synth_sim/vsdbabysoc.synth.v src/module/
+```
+Run the following iverilog command to compile the testbench:
+```
+$ iverilog -o /home/bhuvan/Bhuvan/sky2syn_week_2/Practicals/VSDBabySoC/output/post_synth_sim/post_synth_sim.out -DPOST_SYNTH_SIM -DFUNCTIONAL -DUNIT_DELAY=#1 -I /home/bhuvan/Bhuvan/sky2syn_week_2/Practicals/VSDBabySoC/src/include -I /home/bhuvan/Bhuvan/sky2syn_week_2/Practicals/VSDBabySoC/src/module /home/bhuvan/Bhuvan/sky2syn_week_2/Practicals/VSDBabySoC/src/module/testbench.v
+
+ -------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| **Option / Argument**                                                      | **Purpose / Description**                                                            |
+|----------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| `iverilog`                                                                 | Icarus Verilog compiler used to compile Verilog files into a simulation executable.  |
+| `-o /home/spatha/VLSI/VSDBabySoC/output/post_synth_sim/post_synth_sim.out` | Specifies the output binary file for simulation.                                     |
+| `-DPOST_SYNTH_SIM`                                                         | Defines the macro `POST_SYNTH_SIM` (used in testbench to switch simulation modes).   |
+| `-DFUNCTIONAL`                                                             | Defines `FUNCTIONAL` to use behavioral models instead of detailed gate-level timing. |
+| `-DUNIT_DELAY=#1`                                                          | Assigns a unit delay of `#1` to all gates for post-synthesis simulation.             |
+| `-I /home/spatha/VLSI/VSDBabySoC/src/include`                              | Adds the `include` directory to the search path for `\`include\` directives.         |
+| `-I /home/spatha/VLSI/VSDBabySoC/src/module`                               | Adds the `module` directory to the include path for additional module references.    |
+| `/home/spatha/VLSI/VSDBabySoC/src/module/testbench.v`                      | Specifies the testbench file as the top-level design for simulation.                 |
+ -------------------------------------------------------------------------------------------------------------------------------------------------------------------
+```
+### Note - You may encounter this error:
+```
+$ iverilog -o /home/bhuvan/Bhuvan/sky2syn_week_2/Practicals/VSDBabySoC/output/post_synth_sim/post_synth_sim.out -DPOST_SYNTH_SIM -DFUNCTIONAL -DUNIT_DELAY=#1 -I /home/bhuvan/Bhuvan/sky2syn_week_2/Practicals/VSDBabySoC/src/include -I /home/bhuvan/Bhuvan/sky2syn_week_2/Practicals/VSDBabySoC/src/module /home/bhuvan/Bhuvan/sky2syn_week_2/Practicals/VSDBabySoC/src/module/testbench.v
+/home/bhuvan/Bhuvan/sky2syn_week_2/Practicals/VSDBabySoC/src/module/sky130_fd_sc_hd.v:74452: syntax error
+I give up.
+```
+
+To resolve this : Update the syntax in the file sky130_fd_sc_hd.v at or around line 74452.
+Change:
+
+`endif SKY130_FD_SC_HD__LPFLOW_BLEEDER_FUNCTIONAL_V
+
+To:
+
+`endif // SKY130_FD_SC_HD__LPFLOW_BLEEDER_FUNCTIONAL_V
+
+## Step 2: Navigate to the Post-Synthesis Simulation Output Directory
+```
+cd output/post_synth_sim/
+```
+## Step 3: Run the Simulation
+```
+./post_synth_sim.out
+```
+## Step 4: View the Waveforms in GTKWave
+```
+gtkwave post_synth_sim.vcd
+```
+![Post_synthesis](images/post.png)
+![Post_synth](images/post_1.png)
 
 
 
 
-
-
-
-
-
-
-
-4
