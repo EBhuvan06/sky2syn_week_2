@@ -78,6 +78,49 @@ diactivate
 </details>
 <details>
  <summary>Simulation</summary>
+ <details>
+ <summary>Need of pre and post synthesis</summary>
+
+ # Pre-Synthesis vs Post-Synthesis Simulation: What I Learned
+As I’ve been working through the digital design flow, I came across something really important: the difference between pre-synthesis and post-synthesis simulation. Both are key steps in verifying that a circuit will actually work — but they happen at different stages and serve different purposes.
+Here’s how I understand it:
+
+# What’s Pre-Synthesis Simulation All About?
+Pre-synthesis simulation is like the "first draft" of your design testing. At this stage, I’m still working with my RTL code — the high-level Verilog version that describes how the circuit should behave logically.
+This step helps me:
+    • Check functionality — does the design do what I expect?
+    • Spot logic bugs early — like incorrect conditions, missing signals, or accidental latch creation.
+    • Quickly test ideas — since RTL simulations are much faster than gate-level ones.
+In simple terms: pre-synthesis is fast, clean, and focused only on the logic. I do this to make sure the basic brain of my design is working before sending it off for synthesis.
+
+# What Changes After Synthesis?
+Once I’ve verified the RTL code, I run it through a synthesis tool, which turns it into a gate-level netlist — this is much closer to the actual hardware.
+Now, we do post-synthesis simulation, which is like asking:
+“Okay, now that this is real hardware logic, does it still work — and work on time?”
+This simulation includes timing delays, so I can check:
+    • If signals arrive too late (timing violations)
+    • If there are glitches or race conditions due to actual gate delays
+    • If the final, synthesized version still behaves the same as the original RTL
+This step gives a more realistic picture of how the design will behave on a real chip — but it's also slower and harder to debug because I'm not working with clean RTL anymore.
+
+# Why Not Just Skip Pre-Synthesis?
+It might seem like I could jump straight to post-synthesis, since it's more accurate. But that’s not a great idea.
+Pre-synthesis is way faster and easier for debugging. It helps catch the basic stuff early — and trust me, fixing bugs at the gate level is a pain. Plus, if something’s wrong in the RTL, there’s no point in simulating the gate-level version yet.
+So both simulations are equally important, just in different ways:
+```
+ ----------------------------------------------------------------------------------------------- 
+|  Simulation Phase   |   What it focuses on       |   Good for...                              |
+|---------------------|----------------------------|--------------------------------------------|
+|  Pre-Synthesis      |   Logic (RTL)              |   Quick debugging, fast runs               |
+|  Post-Synthesis     |   Logic + timing (gates)   |   Final verification, realistic behavior   |
+ -----------------------------------------------------------------------------------------------
+```
+# Final Thoughts
+This process really showed me how design verification is more than just checking if it works — it’s about making sure it works reliably, in real-world conditions, after synthesis and optimization.
+Pre-synthesis gives confidence in the logic,
+Post-synthesis gives confidence in the hardware.
+Both are essential steps in building something that won’t just simulate right, but actually work in silicon.
+</details>
 <details>
  <summary>Pre-Synthesis Simulation</summary>
  
@@ -301,6 +344,36 @@ gtkwave post_synth_sim.vcd
 ```
 ![Post_synthesis](images/post.png)
 ![Post_synth](images/post_2.png)
+
+# Comparing Pre-Synthesis and Post-Synthesis Output
+
+To ensure that the synthesis process did not alter the original design behavior, the output from the pre-synthesis simulation was compared with the post-synthesis simulation.
+
+Both simulations were run using GTKWave, and the resulting waveforms were observed.
+
+</details>
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
