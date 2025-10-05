@@ -300,7 +300,7 @@ cd output/post_synth_sim/
 gtkwave post_synth_sim.vcd
 ```
 ![Post_synthesis](images/post.png)
-![Post_synth](images/post_1.png)
+![Post_synth](images/post_2.png)
 
 
 
